@@ -57,6 +57,7 @@ typedef enum
 	DSI_PANEL_OTA7290B,
 	DSI_PANEL_ST7701,
 	DSI_PANEL_ST7789V,
+	DSI_PANEL_JD9365D,
 	DSI_PANEL_MAX
 } DSI_PANEL_MODEL;
 
@@ -151,95 +152,95 @@ int dsi_init(int devno, const struct dsc_instr *cmds, int size)
 	return ret;
 }
 
-#if 0
-#if PANLE_ADAPTIVITY
-static int dsi_get_panel_id(int devno, unsigned int *id)
-{
-	int ret = 0;
-	unsigned char param[3] = {0xDA, 0xDB, 0xDC};
-	unsigned char buf[4];
+// #if 0
+// #if PANLE_ADAPTIVITY
+// static int dsi_get_panel_id(int devno, unsigned int *id)
+// {
+// 	int ret = 0;
+// 	unsigned char param[3] = {0xDA, 0xDB, 0xDC};
+// 	unsigned char buf[4];
 
-	for (int i = 0; i < 3; i++) {
-		struct get_cmd_info_s get_cmd_info = {
-			.devno = devno,
-			.data_type = 0x06,
-			.data_param = param[i],
-			.get_data_size = 0x01,
-			.get_data = buf
-		};
-		memset(buf, 0, sizeof(buf));
+// 	for (int i = 0; i < 3; i++) {
+// 		struct get_cmd_info_s get_cmd_info = {
+// 			.devno = devno,
+// 			.data_type = 0x06,
+// 			.data_param = param[i],
+// 			.get_data_size = 0x01,
+// 			.get_data = buf
+// 		};
+// 		memset(buf, 0, sizeof(buf));
 
-		ret = mipi_tx_recv_cmd(fd, &get_cmd_info);
-		if (ret < 0) {
-			SAMPLE_PRT("dsi get panel id fail.\n");
-			return ret;
-		}
+// 		ret = mipi_tx_recv_cmd(fd, &get_cmd_info);
+// 		if (ret < 0) {
+// 			SAMPLE_PRT("dsi get panel id fail.\n");
+// 			return ret;
+// 		}
 
-		*id |= (buf[0] << (i * 8));
-	}
-	return ret;
-}
+// 		*id |= (buf[0] << (i * 8));
+// 	}
+// 	return ret;
+// }
 
-static void dsi_panel_init_adaptivity(void)
-{
-	unsigned int panelid = 0;
-	const struct combo_dev_cfg_s *dev_cfg   = NULL;
-	const struct hs_settle_s *hs_timing_cfg = NULL;
-	const struct dsc_instr *dsi_init_cmds   = NULL;
-	int size = 0;
+// static void dsi_panel_init_adaptivity(void)
+// {
+// 	unsigned int panelid = 0;
+// 	const struct combo_dev_cfg_s *dev_cfg   = NULL;
+// 	const struct hs_settle_s *hs_timing_cfg = NULL;
+// 	const struct dsc_instr *dsi_init_cmds   = NULL;
+// 	int size = 0;
 
-	//use one type panel's cfg to init
-	mipi_tx_cfg(fd, (struct combo_dev_cfg_s *)&dev_cfg_hx8394_720x1280);
+// 	//use one type panel's cfg to init
+// 	mipi_tx_cfg(fd, (struct combo_dev_cfg_s *)&dev_cfg_hx8394_720x1280);
 
-	dsi_get_panel_id(0, &panelid);
-	printf("Panel ID: 0x%X\n", panelid);
+// 	dsi_get_panel_id(0, &panelid);
+// 	printf("Panel ID: 0x%X\n", panelid);
 
-	switch (panelid) {
-	case 0xF9483: //EVB
-		dev_cfg = &dev_cfg_hx8394_720x1280;
-		hs_timing_cfg = &hs_timing_cfg_hx8394_720x1280;
-		dsi_init_cmds = dsi_init_cmds_hx8394_720x1280;
-		size = ARRAY_SIZE(dsi_init_cmds_hx8394_720x1280);
-		memcpy(panel_name, "HX8394-720x1280", sizeof("HX8394-720x1280"));
-	break;
+// 	switch (panelid) {
+// 	case 0xF9483: //EVB
+// 		dev_cfg = &dev_cfg_hx8394_720x1280;
+// 		hs_timing_cfg = &hs_timing_cfg_hx8394_720x1280;
+// 		dsi_init_cmds = dsi_init_cmds_hx8394_720x1280;
+// 		size = ARRAY_SIZE(dsi_init_cmds_hx8394_720x1280);
+// 		memcpy(panel_name, "HX8394-720x1280", sizeof("HX8394-720x1280"));
+// 	break;
 
-	case 0xAA: //it's an example
-		dev_cfg = &dev_cfg_ili9881c_720x1280;
-		hs_timing_cfg = &hs_timing_cfg_ili9881c_720x1280;
-		dsi_init_cmds = dsi_init_cmds_ili9881c_720x1280;
-		size = ARRAY_SIZE(dsi_init_cmds_ili9881c_720x1280);
-		memcpy(panel_name, "ILI9881C-720x1280", sizeof("ILI9881C-720x1280"));
-	break;
+// 	case 0xAA: //it's an example
+// 		dev_cfg = &dev_cfg_ili9881c_720x1280;
+// 		hs_timing_cfg = &hs_timing_cfg_ili9881c_720x1280;
+// 		dsi_init_cmds = dsi_init_cmds_ili9881c_720x1280;
+// 		size = ARRAY_SIZE(dsi_init_cmds_ili9881c_720x1280);
+// 		memcpy(panel_name, "ILI9881C-720x1280", sizeof("ILI9881C-720x1280"));
+// 	break;
 
-	default:
-	break;
-	}
+// 	default:
+// 	break;
+// 	}
 
-	if (panelid != 0xF9483)
-		mipi_tx_cfg(fd, (struct combo_dev_cfg_s *)dev_cfg);
-	dsi_init(0, dsi_init_cmds, size);
-	mipi_tx_set_hs_settle(fd, hs_timing_cfg);
-}
-#else
-static void dsi_panel_init(void)
-{
-	const struct combo_dev_cfg_s *dev_cfg   = NULL;
-	const struct hs_settle_s *hs_timing_cfg = NULL;
-	const struct dsc_instr *dsi_init_cmds   = NULL;
-	int size = 0;
+// 	if (panelid != 0xF9483)
+// 		mipi_tx_cfg(fd, (struct combo_dev_cfg_s *)dev_cfg);
+// 	dsi_init(0, dsi_init_cmds, size);
+// 	mipi_tx_set_hs_settle(fd, hs_timing_cfg);
+// }
+// #else
+// static void dsi_panel_init(void)
+// {
+// 	const struct combo_dev_cfg_s *dev_cfg   = NULL;
+// 	const struct hs_settle_s *hs_timing_cfg = NULL;
+// 	const struct dsc_instr *dsi_init_cmds   = NULL;
+// 	int size = 0;
 
-	dev_cfg = &dev_cfg_hx8394_720x1280;
-	hs_timing_cfg = &hs_timing_cfg_hx8394_720x1280;
-	dsi_init_cmds = dsi_init_cmds_hx8394_720x1280;
-	size = ARRAY_SIZE(dsi_init_cmds_hx8394_720x1280);
-	memcpy(panel_name, "HX8394-720x1280", sizeof("HX8394-720x1280"));
+// 	dev_cfg = &dev_cfg_hx8394_720x1280;
+// 	hs_timing_cfg = &hs_timing_cfg_hx8394_720x1280;
+// 	dsi_init_cmds = dsi_init_cmds_hx8394_720x1280;
+// 	size = ARRAY_SIZE(dsi_init_cmds_hx8394_720x1280);
+// 	memcpy(panel_name, "HX8394-720x1280", sizeof("HX8394-720x1280"));
 
-	mipi_tx_cfg(fd, (struct combo_dev_cfg_s *)dev_cfg);
-	dsi_init(0, dsi_init_cmds, size);
-	mipi_tx_set_hs_settle(fd, hs_timing_cfg);
-}
-#endif
-#endif
+// 	mipi_tx_cfg(fd, (struct combo_dev_cfg_s *)dev_cfg);
+// 	dsi_init(0, dsi_init_cmds, size);
+// 	mipi_tx_set_hs_settle(fd, hs_timing_cfg);
+// }
+// #endif
+// #endif
 
 void SAMPLE_DSI_Print_Control(void)
 {
@@ -455,6 +456,13 @@ void SAMPLE_MIPI_SET_PANEL_DESC()
 			g_panel_desc.dsi_init_cmds = NULL;
 			g_panel_desc.dsi_init_cmds_size = 0;
 			break;
+		case DSI_PANEL_JD9365D:
+            g_panel_desc.panel_name = "JD9365D";
+            g_panel_desc.dev_cfg = &dev_cfg_jd9365d_720x720;
+            g_panel_desc.hs_timing_cfg = &hs_timing_cfg_jd9365d;
+            g_panel_desc.dsi_init_cmds = NULL;
+            g_panel_desc.dsi_init_cmds_size = 0;
+            break;
 		case DSI_PANEL_HX8394_EVB:
 		default:
 			printf("default\n");
