@@ -121,6 +121,7 @@ static const char* s_panel_model_type_arr[] = {
 	"OTA7290B",
 	"ST7701",
 	"ST7789V",
+	"JD9365D"
 };
 
 int dsi_init(int devno, const struct dsc_instr *cmds, int size)
@@ -460,8 +461,8 @@ void SAMPLE_MIPI_SET_PANEL_DESC()
             g_panel_desc.panel_name = "JD9365D";
             g_panel_desc.dev_cfg = &dev_cfg_jd9365d_720x720;
             g_panel_desc.hs_timing_cfg = &hs_timing_cfg_jd9365d;
-            g_panel_desc.dsi_init_cmds = NULL;
-            g_panel_desc.dsi_init_cmds_size = 0;
+            g_panel_desc.dsi_init_cmds = dsi_init_cmds_jd9365d_720x720;
+            g_panel_desc.dsi_init_cmds_size = ARRAY_SIZE(dsi_init_cmds_jd9365d_720x720);
             break;
 		case DSI_PANEL_HX8394_EVB:
 		default:
