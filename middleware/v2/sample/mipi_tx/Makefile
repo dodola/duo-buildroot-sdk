@@ -4,7 +4,7 @@ ifeq ($(PARAM_FILE), )
 	include $(PARAM_FILE)
 endif
 include ../sample.mk
-
+KBUILD_DEFINES += -DMIPI_PANEL_HX8394
 PANEL_INC =../../component/panel/$(shell echo $(CHIP_ARCH) | tr A-Z a-z)
 SDIR = $(PWD)
 SRCS = $(wildcard $(SDIR)/*.c)

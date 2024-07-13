@@ -75,7 +75,7 @@ typedef struct _inputPara_ {
 } inputPara;
 
 inputPara g_input_para = {
-	.panel_model = DSI_PANEL_HX8394_EVB,
+	.panel_model = DSI_PANEL_JD9365D,
 };
 
 static struct panel_desc_s g_panel_desc = {
@@ -257,7 +257,7 @@ void printDsiHelp(char **argv)
 {
 	CVI_U32 idx;
 
-	printf("// ------------------------------------------------\n");
+	printf("// -----------------------DODOLA-------------------------\n");
 	printf("%s --laneid=laneid sequence --pnswap=pnswap sequence --panel=select display panel model\n", argv[0]);
 	printf("\noptional panel list by hdmi:\n");
 	for(CVI_S32 i=0;i<DSI_PANEL_MAX;i++)
@@ -328,6 +328,8 @@ CVI_S32 SAMPLE_MIPI_SET_PNSWAP(char* pPnswap)
 
 void SAMPLE_MIPI_SET_PANEL_DESC()
 {
+		  printf("SAMPLE_MIPI_SET_PANEL_DESC\n");
+
 	switch(g_input_para.panel_model)
 	{
 		case DSI_PANEL_ILI9881C:
@@ -458,6 +460,8 @@ void SAMPLE_MIPI_SET_PANEL_DESC()
 			g_panel_desc.dsi_init_cmds_size = 0;
 			break;
 		case DSI_PANEL_JD9365D:
+		  printf("default\n");
+
             g_panel_desc.panel_name = "JD9365D";
             g_panel_desc.dev_cfg = &dev_cfg_jd9365d_720x720;
             g_panel_desc.hs_timing_cfg = &hs_timing_cfg_jd9365d;
@@ -466,7 +470,6 @@ void SAMPLE_MIPI_SET_PANEL_DESC()
             break;
 		case DSI_PANEL_HX8394_EVB:
 		default:
-			printf("default\n");
 			g_panel_desc.panel_name = "HX8394-720x1280";
 			g_panel_desc.dev_cfg = &dev_cfg_hx8394_720x1280;
 			g_panel_desc.hs_timing_cfg = &hs_timing_cfg_hx8394_720x1280;
@@ -492,7 +495,7 @@ CVI_S32 SAMPLE_MIPI_SET_PANEL_MODEL(char* pinput_str)
 {
 	CVI_S32 i = 0;
 	bool is_find = false;
-	DSI_PANEL_MODEL panel_model = DSI_PANEL_HX8394_EVB;
+	DSI_PANEL_MODEL panel_model = DSI_PANEL_JD9365D;
 
 	for(i=0;i<DSI_PANEL_MAX;i++)
 	{

@@ -6,7 +6,7 @@
 
 struct combo_dev_cfg_s dev_cfg_jd9365d_720x720 = {
 	.devno = 0,
-	.lane_id = {MIPI_TX_LANE_0, MIPI_TX_LANE_1, MIPI_TX_LANE_CLK, MIPI_TX_LANE_3, MIPI_TX_LANE_2},
+	.lane_id = {MIPI_TX_LANE_1,MIPI_TX_LANE_CLK, MIPI_TX_LANE_0 , MIPI_TX_LANE_2, MIPI_TX_LANE_3},
 	.lane_pn_swap = {true, true, true, true, true},
 	.output_mode = OUTPUT_MODE_DSI_VIDEO,
 	.video_mode = BURST_MODE,
